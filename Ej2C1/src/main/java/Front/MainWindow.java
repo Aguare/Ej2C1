@@ -1,6 +1,16 @@
 package Front;
 
+import Back.Analizer;
 import Back.LineNumber;
+import Back.Token;
+import java.awt.Point;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Caret;
+import javax.swing.text.Utilities;
 
 /**
  *
@@ -8,7 +18,7 @@ import Back.LineNumber;
  */
 public class MainWindow extends javax.swing.JFrame {
     
-    LineNumber lines;
+    private LineNumber lines;
 
     /**
      * Creates new form MainWindow
@@ -33,13 +43,29 @@ public class MainWindow extends javax.swing.JFrame {
         inputText = new javax.swing.JTextArea();
         analizeButton = new javax.swing.JButton();
         cleanButton = new javax.swing.JButton();
+        lineLabel = new javax.swing.JLabel();
+        columnLabel = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        oneLabel = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        twoLabel = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        threeLabel = new javax.swing.JLabel();
+        fourLabel = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tokensTable = new javax.swing.JTable();
+        jLabel11 = new javax.swing.JLabel();
+        fiveLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocation(new java.awt.Point(0, 0));
         setLocationByPlatform(true);
+        setResizable(false);
 
         jLabel1.setBackground(new java.awt.Color(51, 153, 255));
-        jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("EJERCICIO 2 C1 Marcos Aguare");
@@ -47,9 +73,24 @@ public class MainWindow extends javax.swing.JFrame {
 
         inputText.setColumns(20);
         inputText.setRows(5);
+        inputText.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inputTextMouseClicked(evt);
+            }
+        });
+        inputText.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                inputTextKeyPressed(evt);
+            }
+        });
         scrollPanel.setViewportView(inputText);
 
         analizeButton.setText("Analizar");
+        analizeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                analizeButtonActionPerformed(evt);
+            }
+        });
 
         cleanButton.setText("Limpiar");
         cleanButton.addActionListener(new java.awt.event.ActionListener() {
@@ -58,20 +99,118 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        lineLabel.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        lineLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        lineLabel.setText("Línea: 1");
+        lineLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+
+        columnLabel.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        columnLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        columnLabel.setText("Columna: 1");
+        columnLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+
+        jLabel2.setBackground(new java.awt.Color(51, 153, 255));
+        jLabel2.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("RESULTADOS");
+        jLabel2.setOpaque(true);
+
+        jLabel3.setText("Una vocal ");
+
+        oneLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        oneLabel.setText("0");
+
+        jLabel5.setText("Dos vocales ");
+
+        twoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        twoLabel.setText("0");
+
+        jLabel7.setText("Tres vocales ");
+
+        threeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        threeLabel.setText("0");
+
+        fourLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        fourLabel.setText("0");
+
+        jLabel10.setText("Cuatro vocales ");
+
+        tokensTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Número", "Línea", "Columna"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                true, true, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tokensTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(tokensTable);
+        if (tokensTable.getColumnModel().getColumnCount() > 0) {
+            tokensTable.getColumnModel().getColumn(2).setResizable(false);
+        }
+
+        jLabel11.setText("Cinco vocales ");
+
+        fiveLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        fiveLabel.setText("0");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrollPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(cleanButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(analizeButton)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lineLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(columnLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 163, Short.MAX_VALUE)
+                        .addComponent(cleanButton, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(analizeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(scrollPanel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(twoLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(oneLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(threeLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(fourLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(fiveLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 2, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -79,12 +218,43 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(analizeButton)
-                    .addComponent(cleanButton))
-                .addGap(0, 9, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(scrollPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(analizeButton)
+                                .addComponent(cleanButton))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(lineLabel)
+                                .addComponent(columnLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(8, 8, 8)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(oneLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(twoLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(threeLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(fourLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(fiveLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -92,7 +262,64 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void cleanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cleanButtonActionPerformed
         inputText.setText("");
+        lineLabel.setText("Línea: 1");
+        columnLabel.setText("Columna: 1");
+        changeLabelCounter(new int[]{0, 0, 0, 0, 0});
     }//GEN-LAST:event_cleanButtonActionPerformed
+
+    private void analizeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analizeButtonActionPerformed
+        Reader text = new StringReader(inputText.getText());
+        Analizer analizer = new Analizer(text);
+        try {
+            int out = analizer.yylex();
+            while (out != Analizer.YYEOF) {
+                analizer.yylex();
+            }
+            fillNumberTable(analizer.getTokens());
+            changeLabelCounter(analizer.getCounts());
+        } catch (Exception e) {
+            System.out.println("Error parsing text");
+        }
+    }//GEN-LAST:event_analizeButtonActionPerformed
+
+    private void inputTextKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_inputTextKeyPressed
+        refreshLineColumn();
+    }//GEN-LAST:event_inputTextKeyPressed
+    
+    private void refreshLineColumn() {
+        int line = inputText.getLineCount();
+        int caretPos = inputText.getCaretPosition();
+        try {
+            int offset;
+            offset = Utilities.getRowStart(inputText, caretPos);
+            int column = caretPos - offset + 1;
+            lineLabel.setText("Línea: " + line);
+            columnLabel.setText("Columna: " + column);
+        } catch (BadLocationException ex) {
+            System.out.println("Warning! The position in the textarea is null");
+        }
+    }
+
+    private void inputTextMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inputTextMouseClicked
+        refreshLineColumn();
+    }//GEN-LAST:event_inputTextMouseClicked
+    
+    private void fillNumberTable(ArrayList<Token> tokens) {
+        String col[] = {"Número", "Línea", "Columna"};
+        DefaultTableModel tableModel = new DefaultTableModel(col, 0);
+        tokensTable.setModel(tableModel);
+        for (Token token : tokens) {
+            tableModel.addRow(new Object[]{token.getLex(), token.getLine(), token.getColumn()});
+        }
+    }
+    
+    private void changeLabelCounter(int[] counters) {
+        oneLabel.setText("" + counters[0]);
+        twoLabel.setText("" + counters[1]);
+        threeLabel.setText("" + counters[2]);
+        fourLabel.setText("" + counters[3]);
+        fiveLabel.setText("" + counters[4]);
+    }
 
     /**
      * @param args the command line arguments
@@ -132,8 +359,23 @@ public class MainWindow extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton analizeButton;
     private javax.swing.JButton cleanButton;
+    private javax.swing.JLabel columnLabel;
+    private javax.swing.JLabel fiveLabel;
+    private javax.swing.JLabel fourLabel;
     private javax.swing.JTextArea inputText;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lineLabel;
+    private javax.swing.JLabel oneLabel;
     private javax.swing.JScrollPane scrollPanel;
+    private javax.swing.JLabel threeLabel;
+    private javax.swing.JTable tokensTable;
+    private javax.swing.JLabel twoLabel;
     // End of variables declaration//GEN-END:variables
 }
